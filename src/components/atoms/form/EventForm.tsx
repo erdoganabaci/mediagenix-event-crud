@@ -17,6 +17,7 @@ const EventForm = memo(function EventForm
         label={props.schema.label}
         name={props.schema.name}
         component={props.schema.component}
+
       />;
     case "text":
       return <InputBox

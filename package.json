@@ -3,22 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "latest",
     "@faker-js/faker": "^7.6.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.12",
-    "react-query": "^3.39.3",
-    "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4",
-    "@ant-design/icons": "latest",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "antd": "5.2.0",
+    "moment": "^2.29.4",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-scripts": "^4.0.0"
+    "react-query": "^3.39.3",
+    "react-scripts": "^4.0.0",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",

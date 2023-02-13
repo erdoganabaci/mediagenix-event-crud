@@ -1,12 +1,14 @@
 import { Button, Divider, Input, Modal, Form, message, Alert } from 'antd';
 import { memo, useState } from 'react'
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { RangePickerForm, SelectForm, TextAreaForm, TextForm } from '../atoms/form/types';
 import { EventTable } from './EventTable';
 import { GeneratedEventForm } from "./GeneratedEventForm"
 import { BaseEventPlan, EventPlan } from './types';
 
-interface FormSubmit {
+const { Search } = Input;
+
+export interface FormSubmit {
   title: string;
   type?: "generic" | "holiday";
   startDate?: {
@@ -15,8 +17,8 @@ interface FormSubmit {
   description?: string;
 }
 
-// it will come from backend in future
-const formSchema: (TextForm | SelectForm | RangePickerForm | TextAreaForm)[] = [
+// TODO send request via server
+const FormSchema: (TextForm | SelectForm | RangePickerForm | TextAreaForm)[] = [
   {
     name: "title",
     label: "Title",
@@ -49,6 +51,12 @@ const formSchema: (TextForm | SelectForm | RangePickerForm | TextAreaForm)[] = [
     component: "textarea",
   },
 ];
+const fetchEvents = async ({ queryKey }: any) => {
+  const [, searchTerm] = queryKey;
+  const response = await fetch(`/events/search?q=${searchTerm}`);
+  const data: EventPlan[] = await response.json();
+  return data;
+};
 
 const createEvent = async (event: BaseEventPlan) => {
   const response = await fetch("/event", {
@@ -77,13 +85,20 @@ const Event = memo(
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    const [searchTerm, setSearchTerm] = useState("");
 
     const mutation = useMutation(createEvent, {
       onSuccess: () => {
         queryClient.invalidateQueries("events");
       },
     });
+
+    const { data, isFetching, error } = useQuery(["events", searchTerm], fetchEvents);
+
+    const handleSearch = () => {
+      setSearchTerm("");
+    };
+
 
     const showModal = () => {
       setIsModalOpen(true);
@@ -141,11 +156,18 @@ const Event = memo(
         {contextHolder}
 
         <div className="header">
-          <Input placeholder="Search Events" className="search" />
+          <Search
+            placeholder="Search events"
+            enterButton="Clean"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onSearch={handleSearch}
+            style={{ width: "30%" }}
+          />
           <Button type="primary" className="button" onClick={showModal}>Create Event</Button>
         </div>
         <div className="table-container">
-          <EventTable />
+          <EventTable data={data} isFetching={isFetching} error={error} />
 
           <Modal title="Create new event" open={isModalOpen} onOk={form.submit} okText={"Save"} onCancel={handleCancel}
 
@@ -161,7 +183,7 @@ const Event = memo(
             <Form form={form} onFinish={handleSubmit} onFinishFailed={onFinishFailed} layout={"vertical"}
             >
               <Divider />
-              <GeneratedEventForm schemas={formSchema} />
+              <GeneratedEventForm schemas={FormSchema} />
             </Form>
             {isFailForm && <Alert message="There are errors in the form. Please correct before saving." type="error" showIcon />}
           </Modal>
@@ -171,4 +193,4 @@ const Event = memo(
     )
   })
 
-export { Event }
+export { Event, FormSchema }

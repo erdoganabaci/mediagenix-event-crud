@@ -30,5 +30,44 @@ export const handlers = [
       ctx.delay(1000)
     );
   }),
+  // update event
+  rest.put("/event/:id", async (req, res, ctx) => {
+    const eventId = req.params.id;
+    const updatedEvent = await req.json();
+
+    const eventIndex = events.findIndex(event => event.id === eventId);
+
+    if (eventIndex === -1) {
+      return res(
+        ctx.status(400),
+        ctx.json({ error: `Event with id ${eventId} not found.` })
+      );
+    }
+
+    events[eventIndex] = { ...events[eventIndex], ...updatedEvent };
+
+    return res(
+      ctx.status(200),
+      ctx.body(JSON.stringify(events[eventIndex])),
+      ctx.delay(1000)
+    );
+  }),
+  // search events
+  rest.get("/events/search", (req, res, ctx) => {
+    const queryParams = new URLSearchParams(req.url.search);
+    const q = queryParams.get("q")!;
+
+    const filteredEvents = events.filter(
+      event =>
+        event.title.includes(q) ||
+        event.description.includes(q)
+    );
+  
+    return res(
+      ctx.status(200),
+      ctx.body(JSON.stringify(filteredEvents)),
+      ctx.delay(1000)
+    );
+  }),
 ];
 

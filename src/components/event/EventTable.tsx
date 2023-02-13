@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query';
 import { BaseEventPlan, EventPlan } from './types'
 
-import { Alert, Button, Form, Modal, Table, Tag, message } from 'antd';
+import { Alert, Button, Form, Modal, Table, Tag, message, Divider } from 'antd';
 import { GeneratedEventForm } from './GeneratedEventForm';
 import { FormSchema, FormSubmit } from './Event';
 
@@ -176,6 +176,7 @@ const EventTable = memo(
         >
 
           <Form form={form} onFinish={handleSubmit} onFinishFailed={onFinishFailed} layout={"vertical"}>
+            <Divider />
             <GeneratedEventForm schemas={FormSchema} />
             {isFailForm && <Alert message="There are errors in the form. Please correct before saving." type="error" showIcon />}
           </Form>

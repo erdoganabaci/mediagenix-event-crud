@@ -75,11 +75,10 @@ export const handlers = [
       ctx.delay(1000)
     );
   }),
-  // update event
+  // update event and display it first
   rest.put("/event/:id", async (req, res, ctx) => {
     const eventId = req.params.id;
     const updatedEvent = await req.json();
-
     const eventIndex = events.findIndex(event => event.id === eventId);
 
     if (eventIndex === -1) {
@@ -88,12 +87,13 @@ export const handlers = [
         ctx.json({ error: `Event with id ${eventId} not found.` })
       );
     }
-
-    events[eventIndex] = { ...events[eventIndex], ...updatedEvent };
+    const newEvent = { ...events[eventIndex], ...updatedEvent };
+    events.splice(eventIndex, eventIndex+1); // remove the old event
+    events = [newEvent, ...events];
 
     return res(
       ctx.status(200),
-      ctx.body(JSON.stringify(events[eventIndex])),
+      ctx.body(JSON.stringify(events)),
       ctx.delay(1000)
     );
   }),

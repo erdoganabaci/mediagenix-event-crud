@@ -128,7 +128,7 @@ const Event = memo(
             onSearch={handleSearch}
             style={{ width: "30%" }}
           />
-          <Button type="primary" className="button" onClick={showModal}>Create Event</Button>
+          <Button id="create-event" type="primary" className="button" onClick={showModal}>Create Event</Button>
         </div>
         <div className="table-container">
           <EventTable data={dataEvents} isFetching={isFetchingEvents} error={errorEvents} />
@@ -139,7 +139,7 @@ const Event = memo(
               <Button key="back" onClick={handleCancel}>
                 Cancel
               </Button>,
-              <Button key="submit" type="primary" loading={isSubmitting} onClick={form.submit} disabled={isSubmitting}>
+              <Button id="save-button" key="submit" type="primary" loading={isSubmitting} onClick={form.submit} disabled={isSubmitting}>
                 Save
               </Button>,
             ]}

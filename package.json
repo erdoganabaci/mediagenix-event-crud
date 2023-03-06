@@ -24,6 +24,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "cy:open": "cypress open",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -46,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "cypress": "^12.7.0",
     "msw": "^1.0.1"
   },
   "msw": {

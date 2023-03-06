@@ -138,7 +138,7 @@ const EventTable = memo(
       <>
         {contextHolder}
 
-        <Table dataSource={data} loading={isFetching} rowKey="id">
+        <Table id="event-table" dataSource={data} loading={isFetching} rowKey="id">
           <Column title="Title" dataIndex="title"></Column>
           <Column title="Type" dataIndex="type" render={displayEventType}></Column>
           <Column

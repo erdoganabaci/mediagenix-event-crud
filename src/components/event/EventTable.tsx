@@ -4,7 +4,10 @@ import { BaseEventPlan, EventPlan } from './types'
 
 import { Alert, Button, Form, Modal, Table, Tag, message, Divider } from 'antd';
 import { GeneratedEventForm } from './GeneratedEventForm';
-import { FormSchema, FormSubmit } from './Event';
+import { FormSubmit } from './Event';
+import dayjs from 'dayjs';
+
+const DATE_FORMAT = 'YYYY-DD-MM';
 
 const { Column } = Table;
 
@@ -57,8 +60,6 @@ const EventTable = memo(
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
 
-
-
     const mutation = useMutation(updateEvent, {
       onSuccess: () => {
         queryClient.invalidateQueries("events");
@@ -87,16 +88,17 @@ const EventTable = memo(
       });
     };
 
+
     useEffect(() => {
       if (currentEvent) {
         form.setFieldsValue({
           title: currentEvent.title,
           type: currentEvent.type,
           description: currentEvent.description,
-
+          startDateendDate: [dayjs(currentEvent.startDate, DATE_FORMAT), dayjs(currentEvent.endDate, DATE_FORMAT)]
         });
       }
-    }, [currentEvent, form]);
+    });
 
     const handleSubmit = async (values: FormSubmit) => {
       setIsSubmitting(true);
@@ -104,7 +106,6 @@ const EventTable = memo(
       const startDate = values?.startDate?.endDate ? new Intl.DateTimeFormat().format(values.startDate.endDate[0]).toString() : new Date().toString()
       const endDate = values?.startDate?.endDate ? new Intl.DateTimeFormat().format(values.startDate.endDate[1]).toString() : new Date().toString()
       const description = values?.description ? values.description : ""
-
       const eventRequest = {
         ...values,
         type,
@@ -129,7 +130,6 @@ const EventTable = memo(
     const onFinishFailed = () => {
       setIsFailForm(true)
     };
-
 
     if (error) {
       return <div>{`Error: ${error}`}</div>
@@ -165,6 +165,7 @@ const EventTable = memo(
           open={isModalOpen}
           onOk={handleOk}
           onCancel={handleCancel}
+          destroyOnClose={true}
           footer={[
             <Button key="back" onClick={handleCancel}>
               Cancel
@@ -175,11 +176,13 @@ const EventTable = memo(
           ]}
         >
 
-          <Form form={form} onFinish={handleSubmit} onFinishFailed={onFinishFailed} layout={"vertical"}>
+          <Form form={form} onFinish={handleSubmit} onFinishFailed={onFinishFailed} layout={"vertical"}
+          >
             <Divider />
-            <GeneratedEventForm schemas={FormSchema} />
-            {isFailForm && <Alert message="There are errors in the form. Please correct before saving." type="error" showIcon />}
+            <GeneratedEventForm />
           </Form>
+          {isFailForm && <Alert message="There are errors in the form. Please correct before saving." type="error" showIcon />}
+
         </Modal>
       </>
     )

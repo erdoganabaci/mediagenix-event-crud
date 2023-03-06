@@ -1,18 +1,29 @@
+import { Spin } from "antd";
 import { memo } from "react";
+import { useQuery } from "react-query";
 import { EventForm } from "../atoms/form/EventForm";
 import { RangePickerForm, SelectForm, TextAreaForm, TextForm } from "../atoms/form/types";
 
-interface GeneratedEventFormProps {
-    schemas: (TextForm | SelectForm | RangePickerForm | TextAreaForm)[];
+interface QueryFormSchemaResult {
+    data?: (TextForm | SelectForm | RangePickerForm | TextAreaForm)[];
+    isFetching: boolean;
+    error?: null;
 }
 
+const fetchFormSchema = async () => {
+    const response = await fetch("/eventFormSchema");
+    const data = await response.json();
+    return data;
+};
 const GeneratedEventForm = memo(function GeneratedEventForm
-    (props: GeneratedEventFormProps) {
+    () {
+    const { data: dataFormSchema, isFetching: isFetchingFormSchema }: QueryFormSchemaResult = useQuery("eventFormSchema", fetchFormSchema);
+
     return (
         <div>
-            {props.schemas.map((shema, i) => {
+            {!isFetchingFormSchema ? (dataFormSchema!).map((shema, i) => {
                 return <EventForm key={i} schema={shema} />
-            })}
+            }) : <Spin size="small" tip="Loading..." />}
         </div>
     );
 }

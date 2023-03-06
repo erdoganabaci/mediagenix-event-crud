@@ -7,6 +7,7 @@ interface EventPlan extends BaseEventPlan {
     description?: string;
     startDate: string;
     endDate: string;
+    startDateendDate?: string;
   }
 
 export type { EventPlan,BaseEventPlan}

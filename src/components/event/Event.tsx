@@ -1,7 +1,6 @@
 import { Button, Divider, Input, Modal, Form, message, Alert } from 'antd';
 import { memo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { RangePickerForm, SelectForm, TextAreaForm, TextForm } from '../atoms/form/types';
 import { EventTable } from './EventTable';
 import { GeneratedEventForm } from "./GeneratedEventForm"
 import { BaseEventPlan, EventPlan } from './types';
@@ -17,40 +16,6 @@ export interface FormSubmit {
   description?: string;
 }
 
-// TODO send request via server
-const FormSchema: (TextForm | SelectForm | RangePickerForm | TextAreaForm)[] = [
-  {
-    name: "title",
-    label: "Title",
-    component: "text",
-    required: true,
-  },
-  {
-    name: "type",
-    component: "select",
-    label: "Type",
-    options: [
-      {
-        label: "Generic",
-        value: "generic",
-      },
-      {
-        label: "Holiday",
-        value: "holiday",
-      },
-    ],
-  },
-  {
-    name: ["startDate", "endDate"],
-    component: "range_picker",
-    label: "Date",
-  },
-  {
-    name: "description",
-    label: "Description",
-    component: "textarea",
-  },
-];
 const fetchEvents = async ({ queryKey }: any) => {
   const [, searchTerm] = queryKey;
   const response = await fetch(`/events/search?q=${searchTerm}`);
@@ -93,7 +58,7 @@ const Event = memo(
       },
     });
 
-    const { data, isFetching, error } = useQuery(["events", searchTerm], fetchEvents);
+    const { data: dataEvents, isFetching: isFetchingEvents, error: errorEvents } = useQuery(["events", searchTerm], fetchEvents);
 
     const handleSearch = () => {
       setSearchTerm("");
@@ -150,7 +115,6 @@ const Event = memo(
     const onFinishFailed = () => {
       setIsFailForm(true)
     };
-
     return (
       <>
         {contextHolder}
@@ -167,7 +131,7 @@ const Event = memo(
           <Button type="primary" className="button" onClick={showModal}>Create Event</Button>
         </div>
         <div className="table-container">
-          <EventTable data={data} isFetching={isFetching} error={error} />
+          <EventTable data={dataEvents} isFetching={isFetchingEvents} error={errorEvents} />
 
           <Modal title="Create new event" open={isModalOpen} onOk={form.submit} okText={"Save"} onCancel={handleCancel}
 
@@ -183,7 +147,7 @@ const Event = memo(
             <Form form={form} onFinish={handleSubmit} onFinishFailed={onFinishFailed} layout={"vertical"}
             >
               <Divider />
-              <GeneratedEventForm schemas={FormSchema} />
+              <GeneratedEventForm />
             </Form>
             {isFailForm && <Alert message="There are errors in the form. Please correct before saving." type="error" showIcon />}
           </Modal>
@@ -193,4 +157,4 @@ const Event = memo(
     )
   })
 
-export { Event, FormSchema }
+export { Event }

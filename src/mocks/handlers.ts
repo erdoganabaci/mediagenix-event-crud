@@ -1,5 +1,41 @@
 import { rest } from "msw";
 import { faker } from "@faker-js/faker";
+import { RangePickerForm, SelectForm, TextAreaForm, TextForm } from "../components/atoms/form/types";
+
+const formSchema: (TextForm | SelectForm | RangePickerForm | TextAreaForm)[] = [
+  {
+    name: "title",
+    label: "Title",
+    component: "text",
+    required: true,
+  },
+  {
+    name: "type",
+    component: "select",
+    label: "Type",
+    options: [
+      {
+        label: "Generic",
+        value: "generic",
+      },
+      {
+        label: "Holiday",
+        value: "holiday",
+      },
+    ],
+  },
+  {
+    name: ["startDate", "endDate"],
+    // name: "startDateEndDate", // auto generate name from array in Range Picker component
+    component: "range_picker",
+    label: "Date",
+  },
+  {
+    name: "description",
+    label: "Description",
+    component: "textarea",
+  },
+];
 
 let events = Array(12).fill(0).map((_, i) => ({
   id: i.toString(),
@@ -11,6 +47,15 @@ let events = Array(12).fill(0).map((_, i) => ({
 }));
 
 export const handlers = [
+
+  rest.get("/eventFormSchema", (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.body(JSON.stringify(formSchema)),
+      ctx.delay(2000)
+    );
+  }),
+
   rest.get("/events", (req, res, ctx) => {
     return res(
       ctx.status(200),

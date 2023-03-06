@@ -7,7 +7,7 @@ import { GeneratedEventForm } from './GeneratedEventForm';
 import { FormSubmit } from './Event';
 import dayjs from 'dayjs';
 
-const DATE_FORMAT = 'YYYY-DD-MM';
+const DATE_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 const { Column } = Table;
 

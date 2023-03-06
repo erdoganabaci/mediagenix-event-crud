@@ -1,6 +1,7 @@
 import { rest } from "msw";
 import { faker } from "@faker-js/faker";
 import { RangePickerForm, SelectForm, TextAreaForm, TextForm } from "../components/atoms/form/types";
+import dayjs from "dayjs";
 
 const formSchema: (TextForm | SelectForm | RangePickerForm | TextAreaForm)[] = [
   {
@@ -37,15 +38,21 @@ const formSchema: (TextForm | SelectForm | RangePickerForm | TextAreaForm)[] = [
   },
 ];
 
-let events = Array(12).fill(0).map((_, i) => ({
-  id: i.toString(),
-  title: faker.lorem.words(),
-  type: faker.helpers.arrayElement(["generic", "holiday"]),
-  startDate: faker.date.between(new Date(), faker.date.future()),
-  endDate: faker.date.between(new Date(), faker.date.future()),
-  description: faker.lorem.words(),
-}));
-
+let events = Array(12).fill(0).map((_, i) => {
+  const endDate = faker.date.between(new Date(), faker.date.future());
+  const daysDiff = dayjs(endDate).diff(new Date(), 'day');
+  const randomDaysToAdd = Math.floor(Math.random() * daysDiff);
+  const startDate = dayjs(endDate).subtract(randomDaysToAdd, 'day').toDate();
+  
+  return {
+    id: i.toString(),
+    title: faker.lorem.words(),
+    type: faker.helpers.arrayElement(["generic", "holiday"]),
+    startDate: startDate,
+    endDate: endDate,
+    description: faker.lorem.words(),
+  }
+});
 export const handlers = [
 
   rest.get("/eventFormSchema", (req, res, ctx) => {
@@ -88,7 +95,10 @@ export const handlers = [
       );
     }
     const newEvent = { ...events[eventIndex], ...updatedEvent };
-    events.splice(eventIndex, eventIndex+1); // remove the old event
+    events.splice(eventIndex,1); // remove the old event
+
+    // events[eventIndex] = { ...events[eventIndex], ...updatedEvent };
+
     events = [newEvent, ...events];
 
     return res(
